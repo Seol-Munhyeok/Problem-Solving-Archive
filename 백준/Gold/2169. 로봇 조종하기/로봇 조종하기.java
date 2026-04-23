@@ -30,6 +30,11 @@ public class Main {
 			}
 		}
 		
+		// dp 배열 -INF로 초기화
+		for (int i = 0; i < N; i++) {
+			Arrays.fill(dp[i], -1_000_000_000);
+		}
+		
 		// 0행 초기화
 		dp[0][0] = arr[0][0];
 		for (int i = 1; i < M; i++) {
