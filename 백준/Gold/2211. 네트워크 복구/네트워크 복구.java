@@ -31,6 +31,7 @@ public class Main {
 	static int N, M;
 	static int[] parent;
 	static List<Edge>[] adj;
+	static HashSet<List<Integer>> edges;
 	
 	static void dijkstra(int start) {
 		int[] minDist = new int[N + 1];
@@ -56,6 +57,19 @@ public class Main {
 		}
 	}
 	
+	static void printPath(int start) {
+		List<Integer> path = new ArrayList<>();
+		int end = start;
+		while (end != -1) {
+			path.add(end);
+			end = parent[end];
+		}
+		
+		for (int i = 0; i < path.size() - 1; i++) {
+			if (edges.contains(Arrays.asList(path.get(i + 1), path.get(i)))) continue;
+			edges.add(Arrays.asList(path.get(i), path.get(i + 1)));
+		}
+	}
 	
 	public static void main(String[] args) throws Exception {
 		br = new BufferedReader(new InputStreamReader(System.in));
@@ -73,10 +87,15 @@ public class Main {
 		
 		parent = new int[N + 1];
 		dijkstra(1);
+		edges = new HashSet<>();
+		
+		for (int i = 2; i <= N; i++) {
+			printPath(i);
+		}
 		
 		sb.append(N - 1).append("\n");  // 복구할 회선의 개수 = N - 1
-		for (int i = 2; i <= N; i++) {
-			sb.append(parent[i]).append(" ").append(i).append("\n");
+		for (List<Integer> v : edges) {
+			sb.append(v.get(0)).append(" ").append(v.get(1)).append("\n");
 		}
 		System.out.println(sb);
 	}
