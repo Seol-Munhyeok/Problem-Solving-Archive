@@ -58,9 +58,14 @@ public class Main {
 	
 	static void solve() {
 		int[] distS = dijkstra(s);
+		int[] distG = dijkstra(g);
+		int[] distH = dijkstra(h);
 		
 		for (int x : dstCands) {
-			if (distS[x] % 2 == 1) answer.add(x);
+			if (distS[x] == distS[g] + ghCost + distH[x] ||
+			        distS[x] == distS[h] + ghCost + distG[x]) {
+			        answer.add(x);
+		    }
 		}
 	}
 	
@@ -81,14 +86,11 @@ public class Main {
 			
 			for (int i = 0; i < m; i++) {
 				int a = nextInt(), b = nextInt(), d = nextInt();
-				// g-h를 지나는 간선은 홀수로, 나머지 간선은 짝수로 저장
+				adj[a].add(new Edge(b, d));
+				adj[b].add(new Edge(a, d));
+				
 				if ((a == g && b == h) || (a == h && b == g)) {
-					adj[a].add(new Edge(b, 2 * d - 1));
-					adj[b].add(new Edge(a, 2 * d - 1));
-				}
-				else {
-					adj[a].add(new Edge(b, 2 * d));
-					adj[b].add(new Edge(a, 2 * d));
+					ghCost = d;
 				}
 			}
 			for (int i = 0; i < t; i++) {
