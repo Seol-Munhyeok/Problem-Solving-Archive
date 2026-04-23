@@ -25,7 +25,7 @@ int main(){
         int cur_node = pq.top().second;
         pq.pop();
         // 해당 정점까지의 거리 중 더 짧은 거리를 담는 첫 번째 정점만을 처리한다.
-        //if (dist[cur_node] != cur_dist) continue;
+        if (dist[cur_node] != cur_dist) continue;
         // "다음 정점의 거리"보다 "현재 정점 + 다음 정점까지의 거리"가 더 작으면 갱신(완화)
         for (auto there : adj[cur_node]){
             int nxt_dist = there.first;
