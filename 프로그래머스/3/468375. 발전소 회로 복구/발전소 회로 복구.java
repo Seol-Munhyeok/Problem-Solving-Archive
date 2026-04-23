@@ -1,19 +1,20 @@
 import java.util.*;
 
 class Solution {
-    
     final int[] dy = {-1, 0, 1, 0};
     final int[] dx = {0, 1, 0, -1};
     final int INF = 1_000_000_000;
+    
     int h;         // 건물 층수
     int n, m;      // 세로, 가로
     int k;         // 패널 개수
     int ey, ex;    // 엘리베이터 좌표
+    
     char[][] grid;
     int[][] panels, seqs;
     int[] pre;          // pre[i] = i번 패널을 켜기 위해 먼저 켜져 있어야 하는 패널들의 집합
     int[][] panelDist;  // panelDist[i][j] = 같은 층으로 가정 할 때, i번 패널에서 j번 패널까지의 최단 거리
-    int[][] dp;         // dp[mask][last] = mask: 켠 패널, last: 마지막으로 켠 패널일 때 최소 시간
+    int[][] memo;
     
     public int solution(int h, String[] grid, int[][] panels, int[][] seqs) {
         n = grid.length;
@@ -44,44 +45,33 @@ class Solution {
             pre[b] |= (1 << (a - 1));
         }
         
-        // dp 수행
-        fillDpTable();
-        
-        // 정답 구하기
-        int answer = INF;
-        for (int i = 1; i <= k; i++) {
-            answer = Math.min(answer, dp[(1 << k) - 1][i]);
+        memo = new int[1 << k][k + 1];
+        for (int i = 0; i < (1 << k); i++) {
+            Arrays.fill(memo[i], -1);
         }
-        return answer;
+
+        return dfs(0, 1);
     }
     
-    private void fillDpTable() {
-        // dp 배열 초기화
-        dp = new int[1 << k][k + 1];
-        for (int i = 0; i < (1 << k); i++) {
-            Arrays.fill(dp[i], INF);
-        }
-        dp[0][1] = 0;
+    private int dfs(int mask, int pos) {
+        if (mask == (1 << k) - 1) return 0;
         
-        for (int mask = 0; mask < (1 << k); mask++) {
-            for (int pos = 1; pos <= k; pos++) {
-                if (dp[mask][pos] == INF) continue;
-                
-                for (int next = 1; next <= k; next++) {
-                    // 이미 방문 시 스킵
-                    if ((mask & (1 << (next - 1))) != 0) continue;
-                    
-                    // 선행 조건 미충족시 스킵
-                    if ((mask & pre[next]) != pre[next]) continue;
-                    
-                    // dp 전이
-                    int nextMask = mask | (1 << (next - 1));
-                    dp[nextMask][next] = Math.min(
-                        dp[nextMask][next], dp[mask][pos] + getMinDist(pos, next)
-                    );
-                }
-            }
+        if (memo[mask][pos] != -1) return memo[mask][pos];
+        
+        int ret = INF;
+        
+        for (int next = 1; next <= k; next++) {
+            // 이미 켠 패널이면 스킵
+            if ((mask & (1 << (next - 1))) != 0) continue;
+            
+            // 선행 조건 미충족이면 스킵
+            if ((mask & pre[next]) != pre[next]) continue;
+            
+            int nextMask = mask | (1 << (next - 1));
+            ret = Math.min(ret, getMinDist(pos, next) + dfs(nextMask, next));
         }
+        
+        return memo[mask][pos] = ret;
     }
     
     private int getMinDist(int a, int b) {
