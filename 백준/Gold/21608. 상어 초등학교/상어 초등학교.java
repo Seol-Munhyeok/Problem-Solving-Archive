@@ -23,13 +23,6 @@ public class Main {
 	static int[] dy = {-1, 0, 1, 0};
 	static int[] dx = {0, 1, 0, -1};
 	
-	static class Cand {
-		int y, x, like, empty;
-		Cand(int y, int x, int like, int empty) {
-	        this.y = y; this.x = x; this.like = like; this.empty = empty;
-	    }
-	}
-	
 	static boolean isLiked(int s, int other) {
 		for (int i = 0; i < 4; i++) {
 			if (like[s][i] == other) return true;
@@ -38,7 +31,8 @@ public class Main {
 	}
 	
 	static void placeStudent(int studentNum) {
-		List<Cand> cands = new ArrayList<>();
+		int bestY = -1, bestX = -1;
+		int maxLike = -1, maxEmpty = -1;
 		
 		for (int y = 0; y < N; y++) {
 			for (int x = 0; x < N; x++) {
@@ -54,19 +48,18 @@ public class Main {
 					else if (isLiked(studentNum, seat[ny][nx])) likeCnt++;
 				}
 				
-				cands.add(new Cand(y, x, likeCnt, emptyCnt));
+				if (likeCnt > maxLike
+					|| (likeCnt == maxLike && emptyCnt > maxEmpty)
+					|| (likeCnt == maxLike && emptyCnt == maxEmpty && y < bestY)
+					|| (likeCnt == maxLike && emptyCnt == maxEmpty && y == bestY && x < bestX)) {
+					maxLike = likeCnt;
+					maxEmpty = emptyCnt;
+					bestY = y;
+					bestX = x;
+				}
 			}
 		}
-		
-		Collections.sort(cands, (a, b) -> {
-			if (a.like != b.like) return b.like - a.like;  // like 내림차순
-			if (a.empty != b.empty) return b.empty - a.empty;  // empty 내림차순
-			if (a.y != b.y) return a.y - b.y;  // y 오름차순
-			return a.x - b.x;  // x 오름차순
-		});
-		
-		Cand best = cands.get(0);
-	    seat[best.y][best.x] = studentNum;
+		seat[bestY][bestX] = studentNum;
 	}
 	
 	static int score(int c) {
