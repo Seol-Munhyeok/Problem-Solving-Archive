@@ -24,8 +24,8 @@ public class Main {
 	static final int[] dx = {0, 1, 0, -1};
 	static int N, M, K;
 	static int[][] map;
-	// [y][x][broken][day] = (y, x)에 broken 횟수로 벽을 부술 때 최단 거리.
-	static int[][][] visited;
+	// [y][x][broken][day] = (y, x)에 broken 횟수로 벽을 부술 때 최단 거리. day=0(낮), day=1(밤)
+	static int[][][][] visited;
 	
 	public static void main(String[] args) throws Exception {
 		br = new BufferedReader(new InputStreamReader(System.in));
@@ -39,21 +39,26 @@ public class Main {
 			}
 		}
 		
-		visited = new int[N][M][K + 1];  // 0 = 미방문
+		visited = new int[N][M][K + 1][2];  // 0 = 미방문
 		
 		Queue<int[]> q = new ArrayDeque<>();  // {y, x, broken, day}
 		q.offer(new int[] {0, 0, 0, 0});
-		visited[0][0][0] = 1;  // 시작 지점도 포함
+		visited[0][0][0][0] = 1;  // 시작 지점도 포함
 		
 		while (!q.isEmpty()) {
 			int[] cur = q.poll();
-			int y = cur[0], x = cur[1], brokenCnt = cur[2];
-			int curDist = visited[y][x][brokenCnt];
-			int day = curDist % 2; // 홀수(1)면 낮, 짝수(0)면 밤
+			int y = cur[0], x = cur[1], brokenCnt = cur[2], day = cur[3];
+			int curDist = visited[y][x][brokenCnt][day];
 			
 			if (y == N - 1 && x == M - 1) {
 				System.out.println(curDist);
 				return;
+			}
+			
+			// 밤일 때, 낮 기다리기
+			if (day == 1 && visited[y][x][brokenCnt][day ^ 1] == 0) {
+				q.offer(new int[] {y, x, brokenCnt, day ^ 1});
+				visited[y][x][brokenCnt][day ^ 1] = curDist + 1;
 			}
 			
 			for (int d = 0; d < 4; d++) {
@@ -61,25 +66,17 @@ public class Main {
 				
 				if (ny >= N || ny < 0 || nx >= M || nx < 0) continue;
 				
-				if (map[ny][nx] == 0) {
-					if (visited[ny][nx][brokenCnt] == 0) {
-						q.offer(new int[] {ny, nx, brokenCnt});
-						visited[ny][nx][brokenCnt] = curDist + 1;
-					}
+				// 벽 안 부수고 이동
+				if (map[ny][nx] == 0 && visited[ny][nx][brokenCnt][day ^ 1] == 0) {
+					q.offer(new int[] {ny, nx, brokenCnt, day ^ 1});
+					visited[ny][nx][brokenCnt][day ^ 1] = curDist + 1;
 				}
-				else if (map[ny][nx] == 1 && brokenCnt < K) {
-					// 낮이면 벽 부수고 이동
-					if (day == 1) {
-						if (visited[ny][nx][brokenCnt + 1] == 0) {
-							q.offer(new int[] {ny, nx, brokenCnt + 1});
-							visited[ny][nx][brokenCnt + 1] = curDist + 1;
-						}
-					}
-					// 밤이면 기다리기
-					else {
-						q.offer(new int[] {y, x, brokenCnt});
-						visited[y][x][brokenCnt] = curDist + 1;
-					}
+				
+				// 낮일 때, 벽 부수고 이동
+				if (day == 0 && brokenCnt < K && map[ny][nx] == 1 
+						&& visited[ny][nx][brokenCnt + 1][day ^ 1] == 0) {
+					q.offer(new int[] {ny, nx, brokenCnt + 1, day ^ 1});
+					visited[ny][nx][brokenCnt + 1][day ^ 1] = curDist + 1;
 				}
 			}
 		}
