@@ -3,14 +3,19 @@ using namespace std;
 
 int a[9];
 
+void printV(vector<int> v){
+    for (int i : v) cout << i << '\n';
+}
+
 void combi(int start, vector<int> &b){
     if (b.size() == 7){
-        int ret = accumulate(b.begin(), b.end(), 0);
-        if (ret == 100){
-            for (int i : b) cout << i << '\n';
+        int sum = accumulate(b.begin(), b.end(), 0);
+        if (sum == 100){
+            printV(b);
             exit(0);
         }
     }
+
     for (int i = start + 1; i < 9; i++){
         b.push_back(a[i]);
         combi(i, b);
@@ -20,7 +25,6 @@ void combi(int start, vector<int> &b){
 }
 
 int main(){
-    ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
     for (int i = 0; i < 9; i++) cin >> a[i];
     sort(a, a + 9);
     vector<int> v;
