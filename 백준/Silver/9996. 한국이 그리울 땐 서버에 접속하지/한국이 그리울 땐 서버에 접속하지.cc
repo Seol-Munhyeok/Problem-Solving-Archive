@@ -1,26 +1,29 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+string str, ptrn, prefix, suffix;
 int n;
-string s, ori_s, pre, suf;
+
 int main(){
+    ios::sync_with_stdio(false); cin.tie(0); cout.tie(0);
     cin >> n;
-    cin >> ori_s;
-    int pos = ori_s.find('*');
-    pre = ori_s.substr(0, pos);
-    suf = ori_s.substr(pos + 1);  // 두 번째 인자 생략 = 문자열 끝까지 추출
-    for (int i = 0; i < n; i++){
-        cin >> s;
-        // 반례 체크
-        if (pre.size() + suf.size() > s.size()) {
-            cout << "NE" << '\n';
-        }
-        else {
-            if (pre == s.substr(0, pre.size()) && suf == s.substr(s.size() - suf.size())){
+    cin >> ptrn;
+    while (n--){
+        cin >> str;
+        bool same = false;
+        int pos = ptrn.find('*');
+        prefix = ptrn.substr(0, pos);
+        suffix = ptrn.substr(pos + 1, string::npos);
+        reverse(suffix.begin(), suffix.end());
+        if (prefix == str.substr(0, prefix.size())){
+            str.erase(0, prefix.size());
+            reverse(str.begin(), str.end());
+            if (suffix == str.substr(0, suffix.size())){
                 cout << "DA" << '\n';
+                same = true;
             }
-            else cout << "NE" << '\n';
         }
+        if (!same) cout << "NE" << '\n';
     }
     return 0;
 }
