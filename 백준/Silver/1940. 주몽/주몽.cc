@@ -2,7 +2,7 @@
 using namespace std;
 
 int N, M;
-int a[15001];
+int a[10000004];
 int main(){
     ios::sync_with_stdio(false); cin.tie(0); cout.tie(0);
     cin >> N >> M;
