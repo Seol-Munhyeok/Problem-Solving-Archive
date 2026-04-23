@@ -2,6 +2,7 @@
 using namespace std;
 
 int TC, N, M, W, S, E, T, dist[6006];
+const int INF = 1e9;
 vector<pair<int, int>> adj[6006];
 
 void clear(){
@@ -28,7 +29,8 @@ int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     cin >> TC;
     while (TC--){
-        fill(dist, dist + 6006, 0);
+        fill(dist, dist + 6006, INF);
+        dist[0] = 0;
         clear();
         cin >> N >> M >> W;
         while (M--){
