@@ -1,9 +1,8 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -23,8 +22,19 @@ public class Main {
 	}
 	
 	static int N, K, W;
-	static int[] buildTime, dp, indegree;
+	static int[] buildTime, dp;
 	static List<Integer>[] adj;
+	
+	static int go(int x) {
+		if (dp[x] != -1) return dp[x];
+		
+		dp[x] = buildTime[x];  // 선행 건물이 하나도 없으면 자기 시간만 필요
+		for (int prev : adj[x]) {
+			dp[x] = Math.max(dp[x], go(prev) + buildTime[x]);
+		}
+		
+		return dp[x];
+	}
 	
 	public static void main(String[] args) throws Exception {
 		br = new BufferedReader(new InputStreamReader(System.in));
@@ -44,42 +54,20 @@ public class Main {
 				adj[i] = new ArrayList<>();
 			}
 			
-			indegree = new int[N + 1];
 			for (int i = 0; i < K; i++) {
 				int x = nextInt();
 				int y = nextInt();
-				adj[x].add(y);  // 정방향
-				indegree[y]++;
+				adj[y].add(x);  // Top-Down으로 풀이하므로 역방향으로 저장
 			}
 			
 			W = nextInt();  // 건설해야 할 건물 번호
 			
 			dp = new int[N + 1];  // dp[i] = i 건물을 세우는데 필요한 최소 시간
-			Queue<Integer> q = new ArrayDeque<>();
+			Arrays.fill(dp, -1);
 			
-			for (int i = 1; i <= N; i++) {
-				if (indegree[i] == 0) {
-					dp[i] = buildTime[i];
-					q.offer(i);
-				}
-			}
-			
-			while (!q.isEmpty()) {
-				int cur = q.poll();
-				
-				for (int next : adj[cur]) {
-					dp[next] = Math.max(dp[next], dp[cur] + buildTime[next]);
-					indegree[next]--;
-					
-					if (indegree[next] == 0) {
-						q.offer(next);
-					}
-				}
-			}
-			sb.append(dp[W]).append("\n");
+			sb.append(go(W)).append("\n");
 		}
 		
 		System.out.println(sb);
 	}
-	
 }
