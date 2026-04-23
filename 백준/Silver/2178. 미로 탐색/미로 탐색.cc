@@ -26,8 +26,9 @@ int main(){
         for (int dir = 0; dir < 4; dir++){
             ny = y + dy[dir];
             nx = x + dx[dir];
-            if (ny < 0 || ny >= N || nx < 0 || nx >= M) continue;
-            if (a[ny][nx] == 0 || visited[ny][nx]) continue;
+            if (ny < 0 || ny >= N || nx < 0 || nx >= M || visited[ny][nx]) 
+                continue;
+            if (a[ny][nx] == 0) continue;
             visited[ny][nx] = visited[y][x] + 1;
             q.push({ny, nx});
         }
