@@ -1,53 +1,73 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define prev ffff
 
-int a[104][104], visited[104][104];
+int a[104][104], prev[104][104], visited[104][104], N, M, ret;
 const int dy[] = {-1, 0, 1, 0};
 const int dx[] = {0, 1, 0, -1};
-int n, m, cnt, cnt2;
-vector<pair<int, int>> v;
 
-void go(int y, int x){
-    /* 0에서 탐색을 시작하다가 처음으로 1을 만나는 순간
-        그 좌표를 벡터에 넣고, 탐색을 종료한다. */
+void dfs(int y, int x){
     visited[y][x] = 1;
-    if (a[y][x] == 1){
-        v.push_back({y, x});
-        return;
-    }
     for (int i = 0; i < 4; i++){
         int ny = y + dy[i];
         int nx = x + dx[i];
-        if (ny < 0 || ny >= n || nx < 0 || nx >= m || visited[ny][nx]) continue;
-        go(ny, nx);
+        if (ny < 0 || ny >= N || nx < 0 || nx >= M || visited[ny][nx] || a[ny][nx] == 1)
+            continue;
+        dfs(ny, nx);
+    }
+    return; 
+}
+
+void go(){
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < M; j++){
+            if (visited[i][j] == 1){
+                for (int d = 0; d < 4; d++){
+                    int ny = i + dy[d];
+                    int nx = j + dx[d];
+                    if (ny < 0 || ny >= N || nx < 0 || nx >= M) continue;
+                    if (visited[i][j] == 1 || a[ny][nx] == 1) a[ny][nx] = 0;
+                }
+            }
+        }
     }
     return;
 }
 
+bool finished(){
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < M; j++){
+            if (a[i][j] == 1) return false;
+        }
+    }
+    return true;
+}
+
+int check(){
+    int cnt = 0;
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < M; j++){
+            if (prev[i][j] == 1) cnt++;
+        }
+    }
+    return cnt;
+}
+
 int main(){
-    cin >> n >> m;
-    for (int i = 0; i < n; i++){
-        for (int j = 0; j < m; j++){
+    cin >> N >> M;
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < M; j++){
             cin >> a[i][j];
         }
     }
-    while (true){
-        fill(&visited[0][0], &visited[0][0] + 104 * 104, 0);
-        v.clear();
-        go(0, 0);
-        cnt2 = v.size();
-        for (auto b : v){
-            a[b.first][b.second] = 0;
-        }
-        bool flag = 0;
-        for (int i = 0; i < n; i++){
-            for (int j = 0; j < m; j++){
-                if (a[i][j] != 0) flag = 1;
-            }
-        }
-        cnt++;
-        if (!flag) break;
+    while (!finished()){
+        copy(&a[0][0], &a[0][0] + 100 * 100, &prev[0][0]);
+        memset(visited, 0, sizeof(visited));
+        dfs(0, 0);
+        go();
+        ret++;
     }
-    cout << cnt << '\n' << cnt2 << '\n';
+    cout << ret << '\n';
+    cout << check() << '\n';
     return 0;
 }
