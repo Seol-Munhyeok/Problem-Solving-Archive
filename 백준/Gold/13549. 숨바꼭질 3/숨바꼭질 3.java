@@ -1,9 +1,17 @@
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 
 public class Main {
+	
+	static class Node {
+		int value, dist;
+		Node(int value, int dist) {
+			this.value = value;
+			this.dist = dist;
+		}
+	}
+	
 	static final int INF = 1_000_000_000;
 	static final int MAX_N = 100_002;
 	
@@ -18,38 +26,48 @@ public class Main {
 			return;
 		}
 	
-		int[] dist = new int[MAX_N];
-		Arrays.fill(dist, INF);  // -1 = 미방문
+		PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> Integer.compare(a.dist, b.dist));
+		int[] minDist = new int[MAX_N];
+		Arrays.fill(minDist, INF);
 		
-		Deque<Integer> dq = new ArrayDeque<>();
-		dq.offerFirst(N);
-		dist[N] = 0;
+		pq.offer(new Node(N, 0));
+		minDist[N] = 0;
 		
-		while (!dq.isEmpty()) {
-		    int cur = dq.pollFirst();
-
-		    if (cur == K) {
-		    	System.out.println(dist[K]);
-		    	return;
-		    }
-		    
-		    int next = cur * 2;
-		    if (next < MAX_N && dist[next] > dist[cur]) {
-		        dist[next] = dist[cur];
-		        dq.offerFirst(next);
-		    }
-
-		    next = cur - 1;
-		    if (next >= 0 && dist[next] > dist[cur] + 1) {
-		        dist[next] = dist[cur] + 1;
-		        dq.offerLast(next);
-		    }
-
-		    next = cur + 1;
-		    if (next < MAX_N && dist[next] > dist[cur] + 1) {
-		        dist[next] = dist[cur] + 1;
-		        dq.offerLast(next);
-		    }
+		while (!pq.isEmpty()) {
+			Node cur = pq.poll();
+			
+			// stale check
+			if (cur.dist != minDist[cur.value]) continue;
+			
+			// 종료 조건
+			if (cur.value == K) {
+				System.out.println(cur.dist);
+				return;
+			}
+			
+			// +1로 이동 (가중치 1)
+			int nd = cur.dist + 1;
+			int v = cur.value + 1;
+			if (v < MAX_N && nd < minDist[v]) {
+				pq.offer(new Node(v, nd));
+				minDist[v] = nd;
+			}
+			
+			// -1로 이동 (가중치 1)
+			nd = cur.dist + 1;
+			v = cur.value - 1;
+			if (v >= 0 && nd < minDist[v]) {
+				pq.offer(new Node(v, nd));
+				minDist[v] = nd;
+			}
+			
+			// *2로 이동 (가중치 0)
+			nd = cur.dist;
+			v = cur.value * 2;
+			if (v < MAX_N && nd < minDist[v]) {
+				pq.offer(new Node(v, nd));
+				minDist[v] = nd;
+			}
 		}
 	}
 }
