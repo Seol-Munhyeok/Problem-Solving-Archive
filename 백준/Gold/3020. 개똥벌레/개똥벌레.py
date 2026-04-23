@@ -1,30 +1,26 @@
 import sys
 input = sys.stdin.readline
-from bisect import bisect_left
 
-# 입력 처리
 N, H = map(int, input().split())
-down, up = [], []
-for i in range(N):
+
+# line[i] = 높이 i에서 시작되는 충돌 변화량
+line = [0] * H
+
+for t in range(N):
     h = int(input())
-    if i % 2 == 0:
-        down.append(h)
-    else:
-        up.append(h)
+    if t % 2 == 0:  # 석순(아래에서 위로 올라옴)
+        line[0] += 1
+        line[h] -= 1
+    else:  # 종유석(위에서 아래로 내려옴)
+        line[H - h] += 1
 
-down.sort()
-up.sort()
+# prefix[y] = 높이 y에서 총 충돌 개수
+prefix = [0] * (H + 1)
+for i in range(H):
+    prefix[i + 1] = prefix[i] + line[i]
 
-best = int(1e9)  # 파괴해야 하는 장애물의 최솟값
-way = 1  # 구간의 수
-for h in range(1, H + 1):
-    cnt_down = N // 2 - bisect_left(down, h)
-    cnt_up = N // 2 - bisect_left(up, H - h + 1)
-    cnt = cnt_down + cnt_up
-    if best > cnt:
-        best = cnt
-        way = 1
-    elif best == cnt:
-        way += 1
-        
+prefix = prefix[1:]
+
+best = min(prefix)
+way = prefix.count(best)
 print(best, way)
