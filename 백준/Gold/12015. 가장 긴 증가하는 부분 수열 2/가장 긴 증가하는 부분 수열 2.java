@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -17,23 +18,6 @@ public class Main {
 		return Integer.parseInt(next());
 	}
 	
-	static int lowerBound(int[] lis, int size, int target) {
-		int left = 0;
-		int right = size;  // [left, right)
-		
-		while (left < right) {
-			int mid = (left + right) / 2;
-			
-			if (lis[mid] >= target) {
-				right = mid;
-			} else {
-				left = mid + 1;
-			}
-		}
-		
-		return left;
-	}
-	
 	public static void main(String[] args) throws Exception {
 		br = new BufferedReader(new InputStreamReader(System.in));
 		
@@ -47,7 +31,11 @@ public class Main {
 		int size = 0;
 		
 		for (int x : arr) {
-			int pos = lowerBound(lis, size, x);
+			int pos = Arrays.binarySearch(lis, 0, size, x);
+			
+			if (pos < 0) {
+				pos = -(pos + 1);
+			}
 			
 			lis[pos] = x;
 			
