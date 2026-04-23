@@ -25,80 +25,156 @@ public class Main {
 		CCTV (int id, int y, int x) { this.id = id; this.y = y; this.x = x; }
 	}
 	
-	static int N, M, minAnswer;
-    static int[][] arr;
-    static List<CCTV> cctvs = new ArrayList<>();
+	static int N, M, cctvCnt, minAnswer;
+	static List<CCTV> cctvs, cctvFives;
+	static int[][] arr;
+	static int[] cctvDirs;
 	
-    // 우, 하, 좌, 상
-    static final int[] dy = {0, 1, 0, -1};
-    static final int[] dx = {1, 0, -1, 0};
-    
-    // CCTV 타입별 가능한 방향 경우의 수
-    static final int[][][] DIRS = {
-    		{},
-    		{{0}, {1}, {2}, {3}},  						  // 1번
-    		{{0, 2}, {1, 3}},							  // 2번
-    		{{3, 0}, {0, 1}, {1, 2}, {2, 3}},			  // 3번
-    		{{2, 3, 0}, {3, 0, 1}, {0, 1, 2}, {1, 2, 3}}, // 4번
-    	    {{0, 1, 2, 3}}								  // 5번
-    };
-    
-    // 한 방향으로 감시
-    // 이번 호출에서 새롭게 0 -> -1로 바뀐 칸만 changed에 기록
-    static void watchLine(int y, int x, int dir, List<int[]> changed) {
-    	int ny = y + dy[dir];
-    	int nx = x + dx[dir];
-    	
-    	while (0 <= ny && ny < N && 0 <= nx && nx < M && arr[ny][nx] != 6) {
-    		if (arr[ny][nx] == 0) {
-    			arr[ny][nx] = -1;
-    			changed.add(new int[] {ny, nx});
-    		}
-    		ny += dy[dir];
-    		nx += dx[dir];
-    	}
-    }
-    
-    // CCTV 하나의 여러 방향 감시
-    static void watch(CCTV cctv, int[] dirs, List<int[]> changed) {
-    	for (int dir : dirs) {
-    		watchLine(cctv.y, cctv.x, dir, changed);
-    	}
-    }
+	static void monitorLeft(int id, int y, int x) {
+		for (int i = 0; x - i >= 0 && i < M; i++) {
+			if (arr[y][x - i] == 6) return;
+			arr[y][x - i] = id;
+		}
+	}
 	
-    // 이번 단계에서 바뀐 칸만 복구
-    static void undo(List<int[]> changed) {
-    	for (int[] pos : changed) {
-    		arr[pos[0]][pos[1]] = 0;
-    	}
-    }
-    
-    static int countBlind() {
-        int cnt = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (arr[i][j] == 0) cnt++;
-            }
-        }
-        return cnt;
-    }
-    
-    static void dfs(int idx) {
-    	if (idx == cctvs.size()) {
-    		minAnswer = Math.min(minAnswer, countBlind());
-    		return;
-    	}
-    	
-    	CCTV cur = cctvs.get(idx);
-    	
-    	for (int[] dirs : DIRS[cur.id]) {
-    		List<int[]> changed = new ArrayList<>();
-    		
-    		watch(cur, dirs, changed);
-    		dfs(idx + 1);
-    		undo(changed);
-    	}
-    }
+	static void monitorRight(int id, int y, int x) {
+		for (int i = 0; x + i < M && i < M; i++) {
+			if (arr[y][x + i] == 6) return;
+			arr[y][x + i] = id;
+		}
+	}
+	
+	static void monitorUp(int id, int y, int x) {
+		for (int i = 0; y - i >= 0 && i < N; i++) {
+			if (arr[y - i][x] == 6) return;
+			arr[y - i][x] = id;
+		}
+	}
+	
+	static void monitorDown(int id, int y, int x) {
+		for (int i = 0; y + i < N && i < N; i++) {
+			if (arr[y + i][x] == 6) return;
+			arr[y + i][x] = id;
+		}
+	}
+	
+	static void monitorOne(int y, int x, int dir) {
+		if (dir == 0) monitorRight(1, y, x);
+		else if (dir == 1) monitorDown(1, y, x);
+		else if (dir == 2) monitorLeft(1, y, x);
+		else monitorUp(1, y, x);
+	}
+	
+	static void monitorTwo(int y, int x, int dir) {
+		if (dir == 0 || dir == 2) {
+			monitorLeft(2, y, x);
+			monitorRight(2, y, x);
+		}
+		else {
+			monitorUp(2, y, x);
+			monitorDown(2, y, x);
+		}
+	}
+	
+	static void monitorThree(int y, int x, int dir) {
+		if (dir == 0) {
+			monitorUp(3, y, x);
+			monitorRight(3, y, x);
+		}
+		else if (dir == 1) {
+			monitorRight(3, y, x);
+			monitorDown(3, y, x);
+		}
+		else if (dir == 2) {
+			monitorLeft(3, y, x);
+			monitorDown(3, y, x);
+		}
+		else {
+			monitorLeft(3, y, x);
+			monitorUp(3, y, x);
+		}
+	}
+	
+	static void monitorFour(int y, int x, int dir) {
+		if (dir == 0) {
+			monitorUp(4, y, x);
+			monitorLeft(4, y, x);
+			monitorRight(4, y, x);
+		}
+		else if (dir == 1) {
+			monitorUp(4, y, x);
+			monitorRight(4, y, x);
+			monitorDown(4, y, x);
+		}
+		else if (dir == 2) {
+			monitorRight(4, y, x);
+			monitorDown(4, y, x);
+			monitorLeft(4, y, x);
+		}
+		else {
+			monitorUp(4, y, x);
+			monitorLeft(4, y, x);
+			monitorDown(4, y, x);
+		}
+	}
+	
+	static void monitorFive(int y, int x) {
+		monitorUp(5, y, x);
+		monitorRight(5, y, x);
+		monitorLeft(5, y, x);
+		monitorDown(5, y, x);
+	}
+	
+	static void monitor(CCTV cctv, int dir) {
+		int id = cctv.id;
+		int y = cctv.y;
+		int x = cctv.x;
+		
+		if (id == 1) monitorOne(y, x, dir);
+		else if (id == 2) monitorTwo(y, x, dir);
+		else if (id == 3) monitorThree(y, x, dir);
+		else if (id == 4) monitorFour(y, x, dir);
+	}
+	
+	static int countNotMonitoringZone() {
+		int cnt = 0;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (arr[i][j] == 0) cnt++;
+			}
+		}
+		return cnt;
+	}
+	
+	static void startMonitoring() {
+		for (int i = 0; i < cctvCnt; i++) {
+			monitor(cctvs.get(i), cctvDirs[i]);
+		}
+	}
+	
+	static void dfs(int idx) {
+		if (idx == cctvCnt) {
+			startMonitoring();
+			minAnswer = Math.min(minAnswer, countNotMonitoringZone());
+			return;
+		}
+		
+		for (int dir = 0; dir < 4; dir++) {
+			cctvDirs[idx] = dir;
+			// 원본 배열 복사
+			int[][] backup = new int[N][M];
+			for (int i = 0; i < N; i++) {
+				System.arraycopy(arr[i], 0, backup[i], 0, M);
+			}
+			
+			dfs(idx + 1);
+			
+			// 원상 복구
+			for (int i = 0; i < N; i++) {
+				System.arraycopy(backup[i], 0, arr[i], 0, M);
+			}
+		}
+	}
 	
 	public static void main(String[] args) throws Exception {
 		br = new BufferedReader(new InputStreamReader(System.in));
@@ -106,15 +182,28 @@ public class Main {
 		N = nextInt(); M = nextInt();
 		arr = new int[N][M];
 		cctvs = new ArrayList<>();
+		cctvFives = new ArrayList<>();
 		
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < M; j++) {
-				arr[i][j] = nextInt();
-                if (1 <= arr[i][j] && arr[i][j] <= 5) {
-                    cctvs.add(new CCTV(arr[i][j], i, j));
-                }
+				int val = nextInt();
+				arr[i][j] = val;
+				if (val != 0 && val != 5 && val != 6) {
+					cctvs.add(new CCTV(val, i, j));
+				}
+				else if (val == 5) {
+					cctvFives.add(new CCTV(val, i, j));
+				}
 			}
 		}
+		
+		// 5번 CCTV는 미리 감시 (회전해도 변하지 않음)
+		for (CCTV c : cctvFives) {
+			monitorFive(c.y, c.x);
+		}
+		
+		cctvCnt = cctvs.size();
+		cctvDirs = new int[cctvCnt];
 		
 		minAnswer = 1_000_000_000;
 		dfs(0);
