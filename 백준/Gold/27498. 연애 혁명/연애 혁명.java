@@ -58,12 +58,10 @@ public class Main {
 		makeSet(V);
 		
 		int total = 0;
-		int cnt = 0;
 		// 이미 성사된 관계는 먼저 union
 		for (Edge e : connected) {
 			union(e.from, e.to);
 			total += e.w;
-			cnt++;
 		}
 		
 		// 나머지 간선들로 최대 스패닝 트리	
@@ -72,8 +70,6 @@ public class Main {
 		for (Edge edge : edges) {
 			if (union(edge.from, edge.to)) {
 				total += edge.w;
-				cnt++;
-				if (cnt == V - 1) break;
 			}
 		}
 		
