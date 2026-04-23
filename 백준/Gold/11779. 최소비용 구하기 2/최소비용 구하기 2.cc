@@ -1,9 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define X first
+#define Y second 
 
 int V, E, st, en;
 vector<pair<int, int>> adj[1005];   // {비용, 정점 번호}
-const int INF = 1e9 + 10;
+const int INF = 1e9;
 int d[1005];  // 최단 거리 테이블
 int pre[1005];  // 경로 추적용 테이블
 
@@ -24,16 +26,14 @@ int main(){
     while (!pq.empty()){
         auto cur = pq.top();  pq.pop();  // {비용, 정점 번호}
         // 거리가 d에 있는 값과 다를 경우 넘어감
-        int cur_idx = cur.second, cur_dist = cur.first;
-        if (d[cur_idx] != cur_dist) continue;
-        for (auto nxt : adj[cur_idx]){
-            int nxt_idx = nxt.second, nxt_dist = nxt.first;
-            if (d[nxt_idx] > d[cur_idx] + nxt_dist){
+        if (d[cur.Y] != cur.X) continue;
+        for (auto nxt : adj[cur.Y]){
+            if (d[nxt.Y] > d[cur.Y] + nxt.X){
                 // cur를 거쳐가는 것이 더 작은 값을 가질 경우
                 // d[nxt_idx]을 갱신하고 우선순위 큐에 (거리, nxt.Y)를 추가
-                d[nxt_idx] = d[cur_idx] + nxt_dist;
-                pq.push({d[nxt_idx], nxt_idx});
-                pre[nxt_idx] = cur_idx;
+                d[nxt.Y] = d[cur.Y] + nxt.X;
+                pq.push({d[nxt.Y], nxt.Y});
+                pre[nxt.Y] = cur.Y;
             }
         }
     }
