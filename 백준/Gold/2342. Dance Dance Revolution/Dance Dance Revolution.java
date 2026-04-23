@@ -20,6 +20,9 @@ public class Main {
 	
 	static final int INF = 1_000_000_000;
 	static final int MAX = 100_001;
+	static int N;
+	static int[] arr;
+	static int[][][] dp;  // dp[l][r][idx] = (l,r)에서 idx부터 끝까지의 최소 비용
 	
 	static int cost(int from, int to) {
 		if (from == to) return 1;
@@ -28,11 +31,34 @@ public class Main {
 		return 3;
 	}
 	
+	static int dfs(int l, int r, int idx) {
+		if (idx == N + 1) return 0;
+		
+		int memo = dp[l][r][idx];
+		if (memo != -1) return memo;
+		
+		int target = arr[idx];
+		int minPower = INF;
+		
+		// 왼발을 target으로 (단, 오른발이 이미 target이면 두 발 겹침 -> 불가)
+		if (r != target) {
+			minPower = Math.min(minPower, cost(l, target) + dfs(target, r, idx + 1));
+		}
+		
+		// 오른발을 target으로 (단, 왼발이 이미 target이면 두 발 겹침 -> 불가)
+		if (l != target) {
+			minPower = Math.min(minPower, cost(r, target) + dfs(l, target, idx + 1));
+		}
+		
+		dp[l][r][idx] = minPower;
+		
+		return minPower;
+	}
+	
 	public static void main(String[] args) throws Exception {
 		br = new BufferedReader(new InputStreamReader(System.in));
-		
-		int[] arr = new int[MAX];  // 1-based
-		int N = 0;
+		arr = new int[MAX];  // 1-based
+		N = 0;
 		
 		while (true) {
 			int num = nextInt();
@@ -40,41 +66,13 @@ public class Main {
 			arr[++N] = num;
 		}
 		
-		// dp[l][r] = 지금까지 i번째 지시까지 처리했을 때, 두 발 위치가 (l, r)인 최소 누적 힘
-		int[][] dp = new int[5][5];   
-		for (int i = 0; i < 5; i++) Arrays.fill(dp[i], INF);
-		dp[0][0] = 0;
-		
-		for (int idx = 1; idx <= N; idx++) {
-			int target = arr[idx];
-			int[][] next = new int[5][5];
-			for (int i = 0; i < 5; i++) Arrays.fill(next[i], INF);
-			
-			for (int l = 0; l < 5; l++) {
-				for (int r = 0; r < 5; r++) {
-					int cur = dp[l][r];
-					
-					// 왼발로 이동 (오른발과 같으면 안됨)
-					if (target != r) {
-						next[target][r] = Math.min(next[target][r], cost(l, target) + cur);
-					}
-					// 오른발로 이동
-					if (target != l) {
-						next[l][target] = Math.min(next[l][target], cost(r, target) + cur);
-					}
-				}
+		dp = new int[5][5][N + 2];
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) {
+				Arrays.fill(dp[i][j], -1);
 			}
-			
-			dp = next;
 		}
 		
-		int answer = INF;
-		for (int l = 0; l < 5; l++) {
-	        for (int r = 0; r < 5; r++) {
-	            answer = Math.min(answer, dp[l][r]);
-	        }
-	    }
-		
-		System.out.println(answer);
+		System.out.println(dfs(0, 0, 1));
 	}
 }
