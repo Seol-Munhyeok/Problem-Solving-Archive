@@ -32,11 +32,11 @@ public class Main {
 		int num = 1, step = 1, dir = 0;
 		
 		arr[y][x] = num++;
-        SPIRAL:
 		while (num <= N*N) {
 			for (int repeat = 0; repeat < 2; repeat++) {
+				if (num > N*N) break;
 				for (int i = 0; i < step; i++) {
-					if (num > N*N) break SPIRAL;
+					if (num > N*N) break;
 					y += dy[dir];
 					x += dx[dir];
 					arr[y][x] = num;
