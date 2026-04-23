@@ -2,7 +2,7 @@
 using namespace std;
 
 int cnt, a[10][10];
-bool visited[10];
+bool found, visited[10];
 vector<pair<int, int>> v;
 
 bool check(int y, int x){
@@ -40,7 +40,8 @@ void dfs(int n){
             }
             cout << "\n";
         }
-        exit(0);
+        found = true;
+        return;
     }
     int y, x;
     for (int k = 1; k <= 9; k++){
@@ -48,6 +49,7 @@ void dfs(int n){
         a[y][x] = k;
         if (check(y, x)) dfs(n + 1); // 그 숫자가 가능하면 다음 빈칸 탐색
     }
+    if (found) return;
     a[y][x] = 0;  // 다 불가능하면 원상복구
     return;
 }
