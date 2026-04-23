@@ -20,7 +20,7 @@ int main(){
         cin >> input;
         int key = atoi(input.c_str());
         if (key) cout << a[key] << '\n'; 
-        else cout << mp[input] << '\n';
+        else cout << mp.find(input)->second << '\n';
     }
     return 0;
 }
