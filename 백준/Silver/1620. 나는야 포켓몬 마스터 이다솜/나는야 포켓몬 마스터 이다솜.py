@@ -9,7 +9,7 @@ for _ in range(n):
 reversed_dex = {value: key for key, value in pokemon_dex.items()}
 for _ in range(m):
     test = sys.stdin.readline().strip()
-    if test.isdigit():
+    try:
         print(pokemon_dex.get(int(test)))
-    else:
+    except ValueError:
         print(reversed_dex.get(test))
