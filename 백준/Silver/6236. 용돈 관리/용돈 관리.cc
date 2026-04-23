@@ -2,9 +2,10 @@
 using namespace std;
 using ll = long long;
 
-ll N, M, mx, lo, hi, ret, a[100004];
+ll N, M, mx, sum, lo, hi, ret, a[100004];
 
 bool check(ll mid){
+    if (mx > mid) return false;
     ll cnt = 1, tmp = mid;
     for (int i = 0; i < N; i++){
         if (mid - a[i] < 0){
@@ -22,8 +23,9 @@ int main(){
     for (int i = 0; i < N; i++){
         cin >> a[i];
         mx = max(mx, a[i]);
+        sum += a[i];
     }
-    lo = mx; hi = 1e9 + 4;
+    lo = mx; hi = sum;
     while (lo <= hi){
         ll mid = (lo + hi) / 2;
         if (check(mid)){
