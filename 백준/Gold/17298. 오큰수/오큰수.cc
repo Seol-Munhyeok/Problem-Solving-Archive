@@ -3,18 +3,27 @@ using namespace std;
 
 stack<int> stk;
 const int MAX = 1000004;
-int N, a[MAX], ret[MAX];
+int N, a[MAX];
 
 int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     cin >> N;
-    memset(ret, -1, sizeof(ret));
     for (int i = 0; i < N; i++){
         cin >> a[i];
-        while (stk.size() && a[stk.top()] < a[i]){
-            ret[stk.top()] = a[i];  stk.pop();
+    }
+    for (int i = 0; i < N; i++){
+        int num = a[i];
+        while (stk.size() && a[stk.top()] < num){
+            a[stk.top()] = num;
+            stk.pop();
         }
         stk.push(i);
     }
-    for (int i = 0; i < N; i++) cout << ret[i] << ' ';
+    while (stk.size()){
+        a[stk.top()] = -1;
+        stk.pop();
+    }
+    for (int i = 0; i < N; i++) cout << a[i] << ' ';
+
     return 0;
 }
