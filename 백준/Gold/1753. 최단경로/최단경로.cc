@@ -1,42 +1,44 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int V, E, st;
-vector<pair<int, int>> adj[20005];   // {비용, 정점 번호}
-const int INF = 1e9 + 10;
-int d[20005];  // 최단 거리 테이블
+int V, E, K, u, v, w;
+vector<pair<int, int>> adj[20001];
+int dist[20001];
+const int INF = 1e9;
+priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin >> V >> E >> st;
-    fill(d, d + V + 1, INF);
-    while (E--){
-        int u, v, w;
+    cin >> V >> E >> K;
+    fill(dist, dist + 20001, INF);  // 처음 거리 무한대로 초기화
+    for (int i = 0; i < E; i++){
         cin >> u >> v >> w;
-        adj[u].push_back({w, v});
+        adj[u].push_back(make_pair(w, v));
     }
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    d[st] = 0;
-    // 우선순위 큐에 (0, 시작점) 추가
-    pq.push({d[st], st});
-    while (!pq.empty()){
-        auto cur = pq.top();  pq.pop();  // {비용, 정점 번호}
-        // 거리가 d에 있는 값과 다를 경우 넘어감
-        int cur_idx = cur.second, cur_dist = cur.first;
-        if (d[cur_idx] != cur_dist) continue;
-        for (auto nxt : adj[cur_idx]){
-            int nxt_idx = nxt.second, nxt_dist = nxt.first;
-            if (d[nxt_idx] > d[cur_idx] + nxt_dist){
-                // cur를 거쳐가는 것이 더 작은 값을 가질 경우
-                // d[nxt_idx]을 갱신하고 우선순위 큐에 (거리, nxt.Y)를 추가
-                d[nxt_idx] = d[cur_idx] + nxt_dist;
-                pq.push({d[nxt_idx], nxt_idx});
+    // 시작 위치 초기화
+    pq.push(make_pair(0, K));
+    dist[K] = 0;
+    // 로직
+    while (pq.size()){
+        // 지금 정점 부터 최소거리인 정점부터 탐색
+        int cur_dist = pq.top().first;
+        int cur_node = pq.top().second;
+        pq.pop();
+        // 해당 정점까지의 거리 중 더 짧은 거리를 담는 첫 번째 정점만을 처리한다.
+        //if (dist[cur_node] != cur_dist) continue;
+        // "다음 정점의 거리"보다 "현재 정점 + 다음 정점까지의 거리"가 더 작으면 갱신(완화)
+        for (auto there : adj[cur_node]){
+            int nxt_dist = there.first;
+            int nxt_node = there.second;
+            if (dist[nxt_node] > dist[cur_node] + nxt_dist){
+                dist[nxt_node] = dist[cur_node] + nxt_dist;
+                pq.push(make_pair(dist[nxt_node], nxt_node));
             }
         }
     }
-    for(int i = 1; i <= V; i++){
-        if(d[i] == INF) cout << "INF\n";
-        else cout << d[i] << "\n";
+    for (int i = 1; i <= V; i++){
+        if (dist[i] == INF) cout << "INF" << '\n';
+        else cout << dist[i] << '\n';
     }
     return 0;
 }
