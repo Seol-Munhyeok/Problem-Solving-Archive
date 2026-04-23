@@ -1,33 +1,38 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 19;
-vector<int> range = {0,1,4,6,8,9,10,12,14,15,16,18};
-int C[N];
+const int n = 18;
+bool isP[20];
+double a, b, dp[20][20][20];
 
-void initBC(){
-    // n = N - 1일 때 nCr 구하기
-    int n = N;
-    C[0] = C[1] = 1;
-    for (int i = 2; i < N; i++){
-        C[0] = C[i] = 1;
-        for(int j = i - 1; j > 0; j--){
-            C[j] += C[j - 1];
-        } 
+double go(int idx, int x, int y){
+    if (idx == n) return isP[x] || isP[y] ? 1.0 : 0.0;
+    double &ret = dp[idx][x][y];
+    if (ret > -0.5) return ret;
+    ret = 0.0;
+    ret += go(idx + 1, x + 1, y) * a * (1 - b);
+    ret += go(idx + 1, x + 1, y + 1) * a * b;
+    ret += go(idx + 1, x, y + 1) * (1 - a) * b;
+    ret += go(idx + 1, x, y) * (1 - a) * (1 - b);
+    return ret;
+}
+
+void era(){
+    fill(isP, isP + 20, 1);
+    isP[0] = 0; isP[1] = 0;
+    for (int i = 2; i <= 20; i++){
+        for (int j = 2 * i; j <= 20; j += i){
+            isP[j] = 0;
+        }
     }
 }
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    initBC();
-    double a, b;
     cin >> a >> b;
-    a /= 100;  b /= 100;
-    double Sa = 0, Sb = 0;
-    for (int r : range){
-        Sa += C[r] * pow(a, r) * pow(1 - a, N - 1 - r);
-        Sb += C[r] * pow(b, r) * pow(1 - b, N - 1 - r);
-    }
-    cout << 1 - Sa * Sb << "\n";
+    a /= 100; b /= 100;
+    era();
+    memset(dp, -1, sizeof(dp));
+    cout << go(0, 0, 0) << "\n";
     return 0;
 }
