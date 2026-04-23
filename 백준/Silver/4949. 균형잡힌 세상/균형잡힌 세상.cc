@@ -8,7 +8,7 @@ string s;
 bool check(string s){
     stack<char> stk;
     for (char ch : s){
-        for (int i : {0, 1}){
+        for (int i = 0; i <= 1; i++){
             if (ch == open[i]) stk.push(ch);
             else if (ch == close[i]){
                 if (stk.size()  && stk.top() == open[i])
