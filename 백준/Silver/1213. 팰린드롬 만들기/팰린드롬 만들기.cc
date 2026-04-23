@@ -21,33 +21,16 @@ int main(){
         cout << "I'm Sorry Hansoo" << '\n';
         exit(0);
     }
-    int len = str.size();
-    if (len % 2 == 0){
-        for (auto it : mp) {
-            char ch = it.first; int cnt = it.second / 2;
-            while (cnt--) tmp += ch;
-        }
-        ret = tmp;
-        reverse(tmp.begin(), tmp.end());
-        ret += tmp;
-        cout << ret << '\n';
+    char center = ' ';
+    for (auto it : mp){
+        if (it.second % 2 == 1) center = it.first;
+        char ch = it.first; int cnt = it.second / 2;
+        while (cnt--) tmp += ch;
     }
-    else {
-        char center; int center_cnt;
-        for (auto it : mp){
-            if (it.second % 2 == 1) {
-                center = it.first; center_cnt = it.second;
-            }
-        }
-        for (auto it : mp){
-            char ch = it.first; int cnt = it.second / 2;
-            while (cnt--) tmp += ch;
-        }
-        ret = tmp;
-        reverse(tmp.begin(), tmp.end());
-        ret += center;
-        ret += tmp;
-        cout << ret << '\n';
-    }
+    ret = tmp;
+    reverse(tmp.begin(), tmp.end());
+    if (center != ' ') ret += center;
+    ret += tmp;
+    cout << ret << '\n';
     return 0;
 }
