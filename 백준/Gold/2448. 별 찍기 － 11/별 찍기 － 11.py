@@ -1,24 +1,24 @@
+import sys
+input = sys.stdin.readline
+
 n = int(input())
-n //= 3
+w, h = 2*n-1, n
 
-res=['  *  ',
-     ' * * ',
-     '*****']
+a = [[' ' for _ in range(w)] for _ in range(h)]
 
-space = 3
-while n != 1:
-    lines = res
-    res = []
-
-    # 위쪽 삼각형: 기존 삼각형을 가운데 정렬
-    for i in lines:
-        res.append(' ' * space + i + ' ' * space)
+def draw(n, y, x):
+    if n == 3:
+        a[y][x] = a[y+1][x-1] = a[y+1][x+1] = '*'
+        for i in range(-2, 3):
+            a[y+2][x+i] = '*'
+        return
     
-    # 아래쪽 삼각형: 기존 삼각형을 좌우로 붙임
-    for j in lines:
-        res.append(j + ' ' + j)
+    draw(n//2, y, x)
+    draw(n//2, y + n//2, x - n//2)
+    draw(n//2, y + n//2, x + n//2)
     
-    n //= 2
-    space *= 2
-
-print('\n'.join(res))
+draw(n, 0, w//2)
+for i in range(h):
+    for j in range(w):
+        print(a[i][j], end='')
+    print()
