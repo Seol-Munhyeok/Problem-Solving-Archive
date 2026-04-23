@@ -1,35 +1,23 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<int> arr;
-int ans = 0;
-int s;
+int N, S, ret, a[25];
 
-void func(int curval, int curidx)
-{
-    for(int i = curidx; i < arr.size(); i++)
-    {
-        if(curval + arr[i] == s)
-        {
-            ans++;
-        }
-        func(curval + arr[i], i + 1);
+void go(int idx, int sum){
+    if (idx == N){
+        if (sum == S) ret++;
+        return;
     }
+    go(idx + 1, sum);
+    go(idx + 1, sum + a[idx]);
 }
 
-int main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-    //freopen("test.txt", "rt", stdin);
-    int n;
-    cin >> n >> s;
-    arr.resize(n);
-    for(int i = 0; i < n; i++)
-    {
-        cin >> arr[i];
-    }
-    func(0,0);
-    cout << ans;
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin >> N >> S;
+    for (int i = 0; i < N; i++) cin >> a[i];
+    go(0, 0);
+    if (S == 0) ret--;  // 공집합은 제외
+    cout << ret << "\n";
     return 0;
 }
