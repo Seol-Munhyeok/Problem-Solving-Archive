@@ -2,55 +2,72 @@
 using namespace std;
 
 const int INF = 1e9;
-int a[20][20], ret = INF, n = 10;
-map<int, int> mp;  // 색종이 개수 저장
+int a[20][20], visited[20][20], ret = INF;
+int paper[5] = {5, 5, 5, 5, 5};  // 각 크기의 색종이의 개수를 저장 
 
 bool check(int y, int x, int len){
-    if (y + len > n || x + len > n) return false;
     for (int i = y; i < y + len; i++){
         for (int j = x; j < x + len; j++){
-            if (a[i][j] == 0) return false;
+            if (i >= 10 || j >= 10) return false;
+            if (a[i][j] == 0 || visited[i][j]) return false;
         }
     }
     return true;
 }
 
-void draw(int y, int x, int len, int value){
-    // value = 1 색종이 떼기
-    // value = 0 색종이 붙이기
+void attach(int y, int x, int len){
     for (int i = y; i < y + len; i++){
         for (int j = x; j < x + len; j++){
-            a[i][j] = value;
+            visited[i][j] = 1;
         }
     }
 }
 
-void dfs(int y, int x, int cnt){
-    if (cnt >= ret) return;
-    if (x == n){
-        dfs(y + 1, 0, cnt);
-        return;
+void detach(int y, int x, int len){
+    for (int i = y; i < y + len; i++){
+        for (int j = x; j < x + len; j++){
+            visited[i][j] = 0;
+        }
     }
-    if (y == n){
+}
+
+void go(int y, int x, int cnt){
+    // 기저사례 : 모든 행과 열을 확인한 경우
+    if (y == 10){
         ret = min(ret, cnt);
         return;
     }
-    if (a[y][x] == 0){
-        dfs(y, x + 1, cnt);
+    // 색종이를 못 붙이거나, 이미 색종이가 붙어 있는 경우 다음 위치로 이동
+    if (a[y][x] == 0 || visited[y][x]){
+        int ny = y;
+        int nx = x + 1;
+        if (nx == 10) {
+            nx = 0;
+            ny++;
+        }
+        go(ny, nx, cnt);
         return;
     }
+    // 모든 길이의 색종이를 붙여보기
     for (int len = 5; len >= 1; len--){
-        if (mp[len] == 5) continue;
-        if (check(y, x, len)){
-            mp[len]++;
-            draw(y, x, len, 0);  // 붙이고
-            dfs(y, x + len, cnt + 1);  // 그 다음거 체크
-            draw(y, x, len, 1);  // 다시 떼고
-            mp[len]--;
+        if (paper[len - 1] && check(y, x, len)){
+            // 색종이 붙이고 다음 위치로 이동
+            attach(y, x, len);
+            int nx = x + len;
+            int ny = y;
+            if (nx == 10) {
+                nx = 0;
+                ny++;
+            }
+            paper[len - 1]--;
+            go(ny, nx, cnt + 1);
+            // 색종이를 제거하고 visited 배열 초기화
+            detach(y, x, len);
+            paper[len - 1]++;
         }
     }
-    return;
 }
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     for (int i = 0; i < 10; i++){
@@ -58,8 +75,7 @@ int main(){
             cin >> a[i][j];
         }
     }
-    dfs(0, 0, 0);
+    go(0, 0, 0);
     cout << (ret == INF ? -1 : ret) << "\n";
-
     return 0;
 }
