@@ -38,33 +38,38 @@ public class Main {
 	static final long INF = Long.MAX_VALUE / 4;
 	static int n, m, k;
 	static List<Edge>[] adj;
-	static int[] count;  // 해당 정점 몇 번 방문했는지
-	static long[] answer; // 각 정점의 K번째 최단경로 저장
+	static PriorityQueue<Long>[] best;
 	
 	static void dijkstra(int start) {
 		PriorityQueue<State> pq = new PriorityQueue<>((a, b) -> Long.compare(a.dist, b.dist));
-		count = new int[n + 1];
 		
+		best = new PriorityQueue[n + 1];
+		for (int i = 1; i <= n; i++) {
+			best[i] = new PriorityQueue<>(Collections.reverseOrder());   // 정점별 최대 힙
+		}
+		
+		best[start].offer(0L);
 		pq.offer(new State(start, 0));
 		
 		while (!pq.isEmpty()) {
 			State cur = pq.poll();
 			
-			count[cur.node]++;
+			// stale check
+			if (best[cur.node].size() == k && cur.dist > best[cur.node].peek()) continue;
 			
-			// k번째로 도착한 순간이 답
-			if (count[cur.node] == k) {
-				answer[cur.node] = cur.dist;
-			}
-			
-			// k번 넘게 방문하면 더 볼 필요 없음
-		    if (count[cur.node] > k) continue;
-		    
 			for (Edge edge : adj[cur.node]) {
 				int next = edge.to;
 				long nd = cur.dist + edge.cost;
 				
-				pq.add(new State(edge.to, nd));
+				// 상위 k개 까지 best[]에 내림차순 순서대로 저장
+				if (best[next].size() < k) {
+					best[next].offer(nd);
+					pq.offer(new State(next, nd));
+				} else if (best[next].peek() > nd) {
+					best[next].poll();
+					best[next].offer(nd);
+					pq.offer(new State(next, nd));
+				}
 			}
 		}
 	}
@@ -84,13 +89,11 @@ public class Main {
 			adj[a].add(new Edge(b, c));
 		}
 		
-		answer = new long[n + 1];
-		
-		Arrays.fill(answer, -1);
 		dijkstra(1);
 		
 		for (int i = 1; i <= n; i++) {
-			sb.append(answer[i]).append("\n");
+			if (best[i].size() < k) sb.append(-1).append("\n");
+			else sb.append(best[i].peek()).append("\n");
 		}
 		
 		System.out.println(sb);
