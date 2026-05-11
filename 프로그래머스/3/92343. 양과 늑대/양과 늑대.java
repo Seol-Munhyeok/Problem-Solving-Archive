@@ -35,7 +35,8 @@ class Solution {
             tree[i] = new ArrayList<>();
         }
         for (int[] e : edges) {
-            tree[e[0]].add(e[1]);  // 단방향
+            tree[e[0]].add(e[1]);
+            tree[e[1]].add(e[0]);
         }
         return tree;  
     }
@@ -44,12 +45,10 @@ class Solution {
     private void dfs(int cur, int sheep, int wolf, List<Integer> cands) {
         if (sheep <= wolf) return;
         
-        answer = Math.max(answer, sheep);
-        
+        visited[cur] = true;
         List<Integer> newCands = new ArrayList<>(cands);
-        newCands.remove(Integer.valueOf(cur));
-        
         for (int next : tree[cur]) {
+            if (visited[next]) continue;
             newCands.add(next);
         }
         
@@ -60,6 +59,8 @@ class Solution {
                 wolf + ((info[next] == 1) ? 1 : 0),
                 newCands);
         }
+        visited[cur] = false;
         
+        answer = Math.max(answer, sheep);
     }
 }
