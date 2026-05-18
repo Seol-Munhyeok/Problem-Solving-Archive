@@ -33,7 +33,12 @@ class Solution {
         pick = new int[w + 2][w + 2];
         
         fillDpTable();
-        
+        for (int i = 0; i < w + 2; i++) {
+            for (int j = 0; j < w + 2; j++) {
+                System.out.print(cost[i][j] + " ");
+            }
+            System.out.println();
+        }
         // 실제 탐색 시작
         int L = 1, R = w;
         while (true) {
