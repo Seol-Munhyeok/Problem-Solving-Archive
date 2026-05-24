@@ -10,12 +10,9 @@ len(s) == 1 인 경우 조심!!
 
 */
 class Solution {
-    public int solution(String s) {
-        int N = s.length();
-        if (N == 1) return 1;  // 문자열의 길이가 1인 경우 예외 처리
-        
-        int answer = 1_000_000_000;
-        for (int len = 1; len <= N / 2; len++) {
+    public int solution(String s) {      
+        int answer = s.length();
+        for (int len = 1; len <= s.length() / 2; len++) {
             List<String> wordList = getSplitList(s, len);
             String compressedWord = compress(wordList);
             answer = Math.min(answer, compressedWord.length());
