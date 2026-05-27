@@ -42,7 +42,7 @@ class Solution {
         long result = 0;
         for (int i = 0; i < diffs.length; i++) {
             if (diffs[i] <= level) result += times[i];
-            else result += ((times[i] + times[i - 1]) * (diffs[i] - level) + times[i]);
+            else result += (long) ((times[i] + times[i - 1]) * (diffs[i] - level) + times[i]);
         }
         return result;
     }
