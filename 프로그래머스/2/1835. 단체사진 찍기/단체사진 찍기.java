@@ -42,10 +42,10 @@ class Solution {
     
     private boolean checkPossible() {
         for (String cmd : data) {
-            int pos1 = pos.get(cmd.charAt(0)) - '0';  // char -> int 변환 실수 조심!
-            int pos2 = pos.get(cmd.charAt(2)) - '0';
+            int pos1 = pos.get(cmd.charAt(0)); 
+            int pos2 = pos.get(cmd.charAt(2));
             char cond = cmd.charAt(3);
-            int num = cmd.charAt(4) - '0';
+            int num = cmd.charAt(4) - '0';  // char -> int 변환 실수 조심!
             
             if (cond == '=') {
                 if (Math.abs(pos1 - pos2) - 1 != num) {
