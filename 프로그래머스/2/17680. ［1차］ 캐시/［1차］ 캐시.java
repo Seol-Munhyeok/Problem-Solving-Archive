@@ -1,10 +1,4 @@
 import java.util.*;
-/**
-LRU(Least Recently Used) 총 실행시간 출력
-0 <= cacheSize <= 30, cities.length = 100_000
-도시 이름은 공백, 숫자, 특수문자 등이 없는 영문자, 대소문자 구분 안함, <= 20
-    모든 이름을 소문자로 전처리
-*/
 
 class Solution {
     public int solution(int cacheSize, String[] cities) {
@@ -16,20 +10,23 @@ class Solution {
             cities[i] = cities[i].toLowerCase();
         }
         
-        LinkedList<String> cache = new LinkedList<>();
         int answer = 0;
+        // accessOrder = true
+        // get/put으로 접근한 원소가 뒤로 이동
+        LinkedHashMap<String, Integer> cache = new LinkedHashMap<>(16, 0.75f, true);
         for (int i = 0; i < cities.length; i++) {
             String city = cities[i];
-            if (!cache.contains(city)) {
+            if (!cache.containsKey(city)) {
                 answer += 5;
-                if (cache.size() == cacheSize) cache.pollFirst();
-            } else {
-                answer += 1;
-                cache.remove(city);  // O(N)    
-            }
-            cache.addLast(city);
+                if (cache.size() == cacheSize) {
+                    String oldestKey = cache.keySet().iterator().next();
+                    cache.remove(oldestKey);  // O(1)
+                }
+            } else answer += 1;
+            
+            cache.put(city, 1);
         }
-         
+                
         return answer;
     }
 }
