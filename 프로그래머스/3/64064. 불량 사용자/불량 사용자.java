@@ -20,7 +20,8 @@ class Solution {
     List<String>[] lst;
     List<String> selected;
     String[] user_id;
-    Set<String> used, answer;
+    Set<String> used;
+    Set<Set<String>> answer;
     
     public int solution(String[] user_id, String[] banned_id) {
         this.user_id = user_id;
@@ -41,10 +42,8 @@ class Solution {
     
     private void dfs(int idx) {
 
-        if (idx == N) {
-            List<String> copy = new ArrayList<>(selected);
-            Collections.sort(copy);
-            answer.add(copy.toString());
+        if (idx == N) {   
+            answer.add(new HashSet<>(selected));
             return;
         }
         
