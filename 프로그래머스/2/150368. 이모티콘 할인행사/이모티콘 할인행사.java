@@ -37,7 +37,7 @@ class Solution {
     
     private void dfs(int idx) {
         if (idx == M) {
-            int[] result = getResult(candDiscountPrice);  // {가입 수, 매출액}
+            int[] result = getResult();  // {가입 수, 매출액}
             answer = better(answer, result);
             return;
         }
@@ -49,7 +49,7 @@ class Solution {
         }
     }
     
-    private int[] getResult(int[] prices) {
+    private int[] getResult() {
         int registerCount = 0, profit = 0;
         // 모든 사용자 탐색
         for (int[] user : users) {
@@ -77,8 +77,8 @@ class Solution {
     }
    
     private int[] better(int[] a, int[] b) {
-        if (a[0] > b[0]) return a;
-        if (a[0] == b[0] && a[1] > b[1]) return a;
-        return b;
+        if (b[0] > a[0]) return b;
+        if (b[0] == a[0] && b[1] > a[1]) return b;
+        return a;
     }
 }
