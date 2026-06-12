@@ -4,8 +4,7 @@ class Solution {
     public String[] solution(String[] files) {
         List<File> fileList = new ArrayList<>();
         for (int i = 0; i < files.length; i++) {
-            String fileName = files[i].toUpperCase();
-            fileList.add(getFile(i, fileName));
+            fileList.add(getFile(i, files[i]));
         }
         
         Collections.sort(fileList);
@@ -51,12 +50,12 @@ class Solution {
         
         @Override
         public int compareTo(File other) {
-            if (!other.head.equals(this.head)) {
-                return this.head.compareTo(other.head);
-            }
-            if (other.number != this.number) {
-                return Integer.compare(this.number, other.number);
-            }
+            int cmp = this.head.compareToIgnoreCase(other.head);
+            if (cmp != 0) return cmp;
+            
+            cmp = Integer.compare(this.number, other.number);
+            if (cmp != 0) return cmp;
+            
             return Integer.compare(this.index, other.index);
         }
     }
