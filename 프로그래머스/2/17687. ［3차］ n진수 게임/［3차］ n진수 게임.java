@@ -1,26 +1,26 @@
 class Solution {
     public String solution(int n, int t, int m, int p) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder all = new StringBuilder();
+        
         int num = 0;
-        while (num < 100_000) {
-            sb.append(intToStr(num, n));
+        while (all.length() < t * m) {
+            all.append(intToStr(num, n));
             num++;
         }
-        String result = sb.toString();
-        sb = new StringBuilder();
-        int count = 0;
-        for (int i = p - 1; i < result.length(); i += m) {
-            if (count >= t) break;
-            sb.append(result.charAt(i));
-            count++;
+        
+        StringBuilder answer = new StringBuilder();
+        for (int i = p - 1; answer.length() < t; i += m) {
+            answer.append(all.charAt(i));
         }
-        return sb.toString();
+        
+        return answer.toString();
     }
     
     private String intToStr(int num, int base) {
         if (num == 0) return "0";
         
         StringBuilder sb = new StringBuilder();
+        
         while (num > 0) {
             int rem = num % base;
             sb.append(toStr(rem));
