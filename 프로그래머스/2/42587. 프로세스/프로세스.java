@@ -2,32 +2,32 @@ import java.util.*;
 class Solution {
     public int solution(int[] priorities, int location) {
         Queue<Integer> q = new ArrayDeque<>();
-        int n = priorities.length;
-        boolean[] removed = new boolean[n];
-        for (int i = 0; i < n; i++) {
+
+        for (int i = 0; i < priorities.length; i++) {
             q.offer(i);
         }
         
         int count = 0;
+        
         while (!q.isEmpty()) {
             int x = q.poll();
-            boolean ok = true;
-            // 우선순위가 더 높은 프로세스 확인
-            for (int i = 0; i < n; i++) {
-                if (x == i) continue;
-                if (removed[i]) continue;
-                if (priorities[x] < priorities[i]) {
-                    ok = false;
-                    q.offer(x);
+            boolean hasHigherPriority = false;
+
+            for (int i : q) {
+                if (priorities[i] > priorities[x]) {
+                    hasHigherPriority = true;
                     break;
                 }
             }
-            if (ok) {
-                removed[x] = true;
-                count++;
+            
+            if (hasHigherPriority) {
+                q.offer(x);
+                continue;
             }
             
-            if (ok && x == location) {
+            count++;
+            
+            if (x == location) {
                 return count;
             }
         }
