@@ -61,8 +61,7 @@ class Solution {
                     continue;
                 }
                 
-                int curCost = dist[cur.y][cur.x][cur.dir];
-                int nextCost = curCost + 100;
+                int nextCost = cur.cost + 100;
                 if (cur.dir != dir) {
                     nextCost += 500;
                     
