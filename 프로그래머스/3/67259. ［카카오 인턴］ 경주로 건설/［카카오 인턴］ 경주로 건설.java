@@ -61,11 +61,7 @@ class Solution {
                     continue;
                 }
                 
-                int nextCost = cur.cost + 100;
-                if (cur.dir != dir) {
-                    nextCost += 500;
-                    
-                }
+                int nextCost = cur.cost + (cur.dir == dir ? 100 : 600);
                 if (nextCost < dist[ny][nx][dir]) {
                     dist[ny][nx][dir] = nextCost;
                     pq.offer(new State(ny, nx, dir, nextCost));
