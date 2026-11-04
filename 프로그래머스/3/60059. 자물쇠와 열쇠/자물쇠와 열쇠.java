@@ -1,7 +1,5 @@
-import java.util.*;
 class Solution {
     public boolean solution(int[][] key, int[][] lock) {
-        int n = key.length;
         for (int i = 0; i < 4; i++) {
             key = rotate90(key);
             if (possible(key, lock)) {
@@ -27,8 +25,8 @@ class Solution {
         int m = key.length;
         int n = lock.length;
         
-        for (int dy = -(m - 1); dy < n; dy++) {
-            for (int dx = -(m - 1); dx < n; dx++) {
+        for (int dy = -m; dy < n; dy++) {
+            for (int dx = -m; dx < n; dx++) {
                 boolean[][] placedKey = new boolean[n][n]; 
                 for (int i = 0; i < m; i++) {
                     for (int j = 0; j < m; j++) {
