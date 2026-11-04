@@ -29,18 +29,18 @@ class Solution {
         
         for (int dy = -(m - 1); dy < n; dy++) {
             for (int dx = -(m - 1); dx < n; dx++) {
-                boolean[][] overlapped = new boolean[n][n]; 
+                boolean[][] placedKey = new boolean[n][n]; 
                 for (int i = 0; i < m; i++) {
                     for (int j = 0; j < m; j++) {
                         if (i + dy < 0 || i + dy >= n || j + dx < 0 || j + dx >= n) continue;
-                        overlapped[i + dy][j + dx] = (key[i][j] == 1);
+                        placedKey[i + dy][j + dx] = (key[i][j] == 1);
                     }
                 }
                 
                 boolean ok = true;
                 for (int i = 0; i < n; i++) {
                     for (int j = 0; j < n; j++) {
-                        if (lock[i][j] + (overlapped[i][j] ? 1 : 0) != 1) {
+                        if (lock[i][j] + (placedKey[i][j] ? 1 : 0) != 1) {
                             ok = false;
                             break;
                         }
