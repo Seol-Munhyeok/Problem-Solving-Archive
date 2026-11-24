@@ -15,36 +15,17 @@ class Solution {
             }
         }
         
-        /*
-0 1 0 0 1 
-0 0 0 0 1 
-0 1 0 0 1 
-0 1 1 0 1 
-0 0 0 0 0 
-        */
-        int[] count = new int[n + 1];
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (graph[i][j]) {
-                    count[i]++;
-                }
-            }
-        }
-        
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (graph[j][i]) {
-                    count[i]++;
-                }
-            }
-        }
-        
         int answer = 0;
         for (int i = 1; i <= n; i++) {
-            if (count[i] == n - 1) {
-                answer++;
+            int count = 0;
+            for (int j = 1; j <= n; j++) {
+                if (graph[i][j] || graph[j][i]) {
+                    count++;
+                }
             }
+            if (count == n - 1) answer++;
         }
+
         return answer;
     }
 }
